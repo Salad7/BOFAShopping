@@ -63,6 +63,7 @@ class ShoppingFragment : Fragment() {
             desc = itemView.findViewById(R.id.tv_description)
             price = itemView.findViewById(R.id.tv_price)
             rating = itemView.findViewById(R.id.rb_rating)
+            rating.numStars = 5
         }
     }
 
