@@ -1,8 +1,11 @@
 package com.example.myapplication
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.api.ShoppingApi
+import com.example.myapplication.api.ShoppingItem
+import com.example.myapplication.api.ShoppingObjects
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,29 +16,40 @@ import retrofit2.create
 import kotlin.coroutines.EmptyCoroutineContext.get
 
 class ShoppingFragmentViewModel : ViewModel() {
-    lateinit var retrofit: Retrofit
-    lateinit var shoppingApi: ShoppingApi
+
+    lateinit var shoppingRepo : ShoppingRepository
     //A mutable state flow which is changeable based on the http call
-    var _shoppingItems : MutableStateFlow<String> = MutableStateFlow("")
+    var _shoppingItems : MutableStateFlow<List<ShoppingItem>> = MutableStateFlow(listOf())
 
     //State flow thats read only
-    val shoppingItems : StateFlow<String>
+    val shoppingItems : StateFlow<List<ShoppingItem>>
         get() =_shoppingItems.asStateFlow()
+
+
     init {
-        retrofit = Retrofit.Builder()
-            .baseUrl("https://fakestoreapi.com/")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-        shoppingApi = retrofit.create<ShoppingApi>()
+
         viewModelScope.launch {
+            shoppingRepo = ShoppingRepository()
             fetchProducts()
 
+
         }
     }
 
-    suspend fun fetchProducts(){
+        suspend fun fetchProducts(){
         viewModelScope.launch {
-                _shoppingItems.value = shoppingApi.fetchProducts()
+            try {
+                _shoppingItems.value = shoppingRepo.shoppingApi.fetchProducts()
+            }
+            catch (ex: Exception){
+                Log.e("ShoppingFragmentViewModel", "Failed to fetch shopping items", ex)
+
+            }
+
         }
     }
+
+
+
+
 }

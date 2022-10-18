@@ -4,5 +4,5 @@ import retrofit2.http.GET
 
 interface ShoppingApi  {
     @GET("/products")
-    suspend fun fetchProducts() : String
+    suspend fun fetchProducts() : List<ShoppingItem>
 }
